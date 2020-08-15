@@ -1,2 +1,2 @@
 # clai_qiskit
-qiskit plugin for clai
+IBM [qiskit](https://qiskit.org/) plugin for clai
