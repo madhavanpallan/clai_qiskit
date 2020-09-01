@@ -22,7 +22,14 @@ from matplotlib.patches import PathPatch
 from PIL import Image
 from qiskit import *
 from qiskit.tools.visualization import plot_histogram 
-  
+from qiskit.aqua.algorithms import NumPyMinimumEigensolver
+from qiskit.optimization.algorithms import GroverOptimizer, MinimumEigenOptimizer
+from qiskit.optimization.problems import QuadraticProgram
+from qiskit import BasicAer
+from docplex.mp.model import Model
+import sys
+import json
+
 class QCOMPUTING(Agent):
     def __init__(self):
         super(QCOMPUTING, self).__init__()
@@ -79,7 +86,24 @@ class QCOMPUTING(Agent):
                     plt.savefig('/tmp/claiqisfigure.png')
                     im = Image.open('/tmp/claiqisfigure.png')
                     im.show()                   
+            elif len(commandTokenized) == 5:
+                if commandTokenized[1] == 'groveropt':
+                    backend = BasicAer.get_backend('statevector_simulator')
+                    # from qiskit.optimization import QuadraticProgram
+                    mod = QuadraticProgram('Grover_Optimizer_on_Quadratic_Program')
+                    mod.binary_var(name='x')
+                    mod.binary_var(name='y')
+                    mod.binary_var(name='z')
                     
+                    constant_value = int(commandTokenized[2])
+                    linear_coeff = json.loads(commandTokenized[3])
+                    quadratic_coeff = json.loads(commandTokenized[4])
+                    
+                    mod.minimize(constant=constant_value, linear=linear_coeff, quadratic=quadratic_coeff)
+
+                    grover_optimizer = GroverOptimizer(6, num_iterations=1, quantum_instance=backend)
+                    results = grover_optimizer.solve(mod)
+                    response = mod.export_as_lp_string() + ".\nsolution of x={}".format(results.x) + ".\n" + "fval={}".format(results.fval)
             else:
                 response = "\nFew parts missing. Please, Try >> clai qcomputing bvazirani secretnumber or Try >> clai qcomputing hello"
             
@@ -97,3 +121,4 @@ class QCOMPUTING(Agent):
 # Reference:-
 # Courtesy for Method Hello World function/ Documentation:- https://qiskit.org/documentation/getting_started.html
 # Courtesy for Method Bernstein Vazirani function:- https://www.youtube.com/watch?v=sqJIpHYl7oo&list=PLOFEBzvs-Vvp2xg9-POLJhQwtVktlYGbY&index=6
+# Courtesy for Grover Optimizer https://qiskit.org/documentation/tutorials/optimization/4_grover_optimizer.html

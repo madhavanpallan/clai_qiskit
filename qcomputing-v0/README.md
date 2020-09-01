@@ -15,6 +15,12 @@ e.g.
 2) `>> clai qcomputing bvazirani 5_digit_binary_number`, when this command is executed one can view the secret number entered, which is identified by the Berstein Vazirani algorithm and output of the circuit diagram is shown for the same. The execution is currently limited to 5 digits of the binary number as input(e.g. 10101 local system restriction).
 ![figure2](https://github.com/madhavanpallan/clai_qiskit/blob/devel/qcomputing-v0/figures/qiskit_bernstein_vazirani.png)
 
+3) `>> clai qcomputing groveropt constant_value list_coefficient_linear_variable list_coefficient_quadratic_variable`, when this command is executed one can find minimization of a Quadratic unconstrained Binary Optimization problem and get solution to the variable and value of minimized objective function. The definition can be seen below.Grover Optimizer utilizes a techniques called GAS(here, GAS is Grover Adaptive Search (GAS) which has been explored as a possible solution for combinatorial optimization problems, alongside variational algorithms such as Variational Quantum Eigensolver (VQE) and Quantum Approximate Optimization Algorithm (QAOA)), by minimizing a Quadratic Unconstrained Binary Optimization (QUBO) problem. [read more](https://qiskit.org/documentation/tutorials/optimization/4_grover_optimizer.html)
+** Change the value of iterations, for better result in Grover Optimizer.
+![figure3]()
+
+4) `>> clai qcomputing admmopt `, TBD
+
 
 *** Courtesy of Qiskit [code](https://qiskit.org) and [tutorial](https://www.youtube.com/qiskit).
 
