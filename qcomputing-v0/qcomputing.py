@@ -22,11 +22,17 @@ from matplotlib.patches import PathPatch
 from PIL import Image
 from qiskit import *
 from qiskit.tools.visualization import plot_histogram 
-from qiskit.aqua.algorithms import NumPyMinimumEigensolver
-from qiskit.optimization.algorithms import GroverOptimizer, MinimumEigenOptimizer
+from qiskit.optimization.algorithms import GroverOptimizer
 from qiskit.optimization.problems import QuadraticProgram
 from qiskit import BasicAer
+
+import time
+from typing import List, Optional, Any
 from docplex.mp.model import Model
+from qiskit.aqua.algorithms import QAOA, NumPyMinimumEigensolver
+from qiskit.optimization.algorithms import CobylaOptimizer, MinimumEigenOptimizer
+from qiskit.optimization.algorithms.admm_optimizer import ADMMParameters, ADMMOptimizer
+
 import sys
 import json
 
@@ -104,6 +110,65 @@ class QCOMPUTING(Agent):
                     grover_optimizer = GroverOptimizer(6, num_iterations=1, quantum_instance=backend)
                     results = grover_optimizer.solve(mod)
                     response = mod.export_as_lp_string() + ".\nsolution of x={}".format(results.x) + ".\n" + "fval={}".format(results.fval)
+
+            elif len(commandTokenized) == 11:
+                if commandTokenized[1] == 'admmopt':
+                    cobyla = CobylaOptimizer()
+
+                    # define QAOA via the minimum eigen optimizer
+                    qaoa = MinimumEigenOptimizer(QAOA(quantum_instance=BasicAer.get_backend('statevector_simulator')))
+
+                    # exact QUBO solver as classical benchmark
+                    exact = MinimumEigenOptimizer(NumPyMinimumEigensolver()) # to solve QUBOs
+
+                    constant_value = int(commandTokenized[2])
+                    linear_coeff = json.loads(commandTokenized[3])
+                    quadratic_coeff = json.loads(commandTokenized[4])
+                    cons1 = json.loads(commandTokenized[5])
+                    consense1 = commandTokenized[6]
+                    cons2 = json.loads(commandTokenized[7])
+                    consense2 = commandTokenized[8]
+                    cons3 = json.loads(commandTokenized[9])
+                    consense3 = commandTokenized[10]
+
+                    mod = QuadraticProgram('ADMM_Optimizer')
+                    mod.continuous_var(name='u')
+                    mod.binary_var(name='v')
+                    mod.binary_var(name='w')
+                    mod.binary_var(name='t')
+
+                    mod.linear_constraint(linear={'u': int(cons1[0]), 'v': int(cons1[1]), 'w':int(cons1[2]), 't':int(cons1[3])}, sense=consense1, rhs=int(cons1[4]))
+                    mod.linear_constraint(linear={'u': int(cons2[0]), 'v': int(cons2[1]), 'w':int(cons2[2]), 't':int(cons2[3])}, sense=consense2, rhs=int(cons2[4]))
+                    mod.linear_constraint(linear={'u': int(cons3[0]), 'v': int(cons3[1]), 'w':int(cons3[2]), 't':int(cons3[3])}, sense=consense3, rhs=int(cons3[4]))
+                    mod.minimize(constant=constant_value, linear=linear_coeff, quadratic=quadratic_coeff)
+
+                    admm_params = ADMMParameters(
+                                                rho_initial=1001,
+                                                beta=1000,
+                                                factor_c=900,
+                                                max_iter=10,
+                                                three_block=True, tol=1.e-6
+                                            )
+                    # define QUBO optimizer
+                    qubo_optimizer = exact
+                    
+                    # define classical optimizer
+                    convex_optimizer = cobyla
+                    
+                    # # initialize ADMM with classical QUBO and convex optimizer
+                    admm = ADMMOptimizer(params=admm_params,
+                                        qubo_optimizer=qubo_optimizer,
+                                        continuous_optimizer=convex_optimizer)
+
+                    # run ADMM to solve problem
+                    result = admm.solve(mod)
+                    response = mod.export_as_lp_string() + "\n solution of function x={}".format(result.x) + "\n fval={:.2f}".format(result.fval)
+                    plt.plot(result.state.residuals)
+                    plt.xlabel("Iterations")
+                    plt.ylabel("Residuals")
+                    plt.savefig('/tmp/claiqcomputingadmm.png')
+                    im = Image.open('/tmp/claiqcomputingadmm.png')
+                    im.show()                   
             else:
                 response = "\nFew parts missing. Please, Try >> clai qcomputing bvazirani secretnumber or Try >> clai qcomputing hello"
             
@@ -122,3 +187,4 @@ class QCOMPUTING(Agent):
 # Courtesy for Method Hello World function/ Documentation:- https://qiskit.org/documentation/getting_started.html
 # Courtesy for Method Bernstein Vazirani function:- https://www.youtube.com/watch?v=sqJIpHYl7oo&list=PLOFEBzvs-Vvp2xg9-POLJhQwtVktlYGbY&index=6
 # Courtesy for Grover Optimizer https://qiskit.org/documentation/tutorials/optimization/4_grover_optimizer.html
+# Courtesy for ADMM Optimizer https://qiskit.org/documentation/tutorials/optimization/5_admm_optimizer.html
