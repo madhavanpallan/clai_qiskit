@@ -16,22 +16,22 @@ e.g.
 ![figure2](https://github.com/madhavanpallan/clai_qiskit/blob/devel/qcomputing-v0/figures/qiskit_bernstein_vazirani.png)
 
 3) `>> clai qcomputing groveropt constant_value list_coefficient_linear_variable list_coefficient_quadratic_variable`, when this command is executed one can find minimization of a Quadratic unconstrained Binary Optimization problem and get solution to the variable and value of minimized objective function. The definition can be seen below.Grover Optimizer utilizes a techniques called GAS(here, GAS is Grover Adaptive Search (GAS) which has been explored as a possible solution for combinatorial optimization problems, alongside variational algorithms such as Variational Quantum Eigensolver (VQE) and Quantum Approximate Optimization Algorithm (QAOA)), by minimizing a Quadratic Unconstrained Binary Optimization (QUBO) problem. [read more](https://qiskit.org/documentation/tutorials/optimization/4_grover_optimizer.html)
->> Change the value of iterations, for better result in Grover Optimizer.
+>* Change the value of iterations, for better result in Grover Optimizer.
 ![figure3](https://github.com/madhavanpallan/clai_qiskit/blob/devel/qcomputing-v0/figures/qiskit_grover_optimization.png)
 
 4) `>> clai clai qcomputing admmopt arg1 arg2 arg3 arg4 arg5 arg6 arg7 arg8 arg9 `, Alternating Direction Method of Multipliers (ADMM) Optimizer is used to solve classes of mixed-binary constrained optimization problems and is used in logistic, finance, and operation research. [More details](https://qiskit.org/documentation/tutorials/optimization/5_admm_optimizer.html)
 
 here, We consider an objective function with 4 variables (3 binary, 1 continuous)
-> arg1 - constant in the objective function
-> arg2 - list of the coefficient of linear variables
-> arg3 - list of the coefficient of the quadratic variable
-> arg4 - list of the coefficient of linear constraint 1 and RHS value 
-> arg5 - sense of linear constraint 1. EQ - equal, LQ - less than equal
-> arg6 - list of the coefficient of linear constraint 2 and RHS value 
-> arg7 - sense of linear constraint 2
-> arg8 - list of the coefficient of linear constraint 3 and RHS value 
-> arg9 - sense of linear constraint 3
->> Change the value of iterations, for better result in ADMM Optimizer.
+>* arg1 - constant in the objective function
+>* arg2 - list of the coefficient of linear variables
+>* arg3 - list of the coefficient of the quadratic variable
+>* arg4 - list of the coefficient of linear constraint 1 and RHS value 
+>* arg5 - sense of linear constraint 1. EQ - equal, LQ - less than equal
+>* arg6 - list of the coefficient of linear constraint 2 and RHS value 
+>* arg7 - sense of linear constraint 2
+>* arg8 - list of the coefficient of linear constraint 3 and RHS value 
+>* arg9 - sense of linear constraint 3
+>* Change the value of iterations, for better result in ADMM Optimizer.
 ![figure4](https://github.com/madhavanpallan/clai_qiskit/blob/devel/qcomputing-v0/figures/qiskit_admm_optimization.png)
 
 *** Courtesy of Qiskit [code](https://qiskit.org) and [tutorial](https://www.youtube.com/qiskit).
