@@ -1,0 +1,4 @@
+---
+applications:
+ - name: qcomputingdeploy
+   memory: 64M
