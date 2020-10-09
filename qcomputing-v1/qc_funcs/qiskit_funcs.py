@@ -144,11 +144,25 @@ def admmopt(commandTokenized):
                         continuous_optimizer=convex_optimizer)
 
     result = admm.solve(mod)
-    response = mod.export_as_lp_string() + "\n solution of function x={}".format(result.x) + "\n fval={:.2f}".format(result.fval)
     plt.plot(result.state.residuals)
     plt.xlabel("Iterations")
     plt.ylabel("Residuals")
     plt.savefig('/tmp/claiqcomputingadmm.png')
     im = Image.open('/tmp/claiqcomputingadmm.png')
     im.show()                   
+    response = mod.export_as_lp_string() + "\n solution of function x={}".format(result.x) + "\n fval={:.2f}".format(result.fval)
+    return response
+
+def funcheck(tester, command_generated):
+    if tester == '0':
+        response = bvazirani(command_generated)
+    elif tester == '1':
+        response = groveropt(command_generated)
+    elif tester == '2':
+        response = admmopt(command_generated)
+    elif tester == '3':
+        response = hello("hello")
+    else:
+	response = "we don't have a option"
+    
     return response
